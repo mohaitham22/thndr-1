@@ -18,13 +18,21 @@
 
 import React from "react";
 import styles from "./page.module.css";
-import CustomForm from "../Components/Form";  // Import the form component
+import Ahly from "@/Components/Form";
+import Date from "@/Components/Date";
+
+
+
 
 const Page: React.FC = () => {
   return (
     <main className={styles.main}>
       <div>
-        <CustomForm />  {/* Render the form component */}
+        
+        <Ahly />
+       <br /><hr /><br />
+        <Date />
+      
       </div>
     </main>
   );
