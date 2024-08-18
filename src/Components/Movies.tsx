@@ -1,7 +1,7 @@
-"use client";  // Ensure this is at the top of the file
-
+"use client";
 import { Card } from "antd";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import SearchComponent from "../Components/Search";
 
 const { Meta } = Card;
 
@@ -13,30 +13,45 @@ type Movie = {
   Poster: string;
 };
 
-type Search = {
-  Search: Movie[];
+type SearchResponse = {
+  Search?: Movie[];
   totalResults: string;
   Response: string;
+  Error?: string;  
 };
 
 export default function Movies() {
-  const [data, setData] = React.useState<Search | null>(null);
-  const [loading, setLoading] = React.useState(false);
+  const [data, setData] = useState<SearchResponse | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchData = (query: string) => {
+    setLoading(true);
+    setError(null);  
+
+    fetch(`https://www.omdbapi.com/?apikey=8bdf708a&s=${query}`)
+      .then((response) => response.json())
+      .then((result) => {
+        if (result.Response === "True") {
+          setData(result);
+        } else {
+          setError(result.Error || "Movie not found");
+          setData(null);
+        }
+      })
+      .finally(() => setLoading(false));
+  };
 
   useEffect(() => {
-    fetchData();
+    fetchData("ted-lasso"); 
   }, []);
 
-  const fetchData = async () => {
-    setLoading(true);
-    const response = await fetch("https://www.omdbapi.com/?apikey=8bdf708a&s=hangover");
-    const result = await response.json();
-    setData(result);
-    setLoading(false);
+  const handleSearch = (value: string) => {
+    fetchData(value);
   };
 
   function renderMovies() {
-    return data?.Search.map((film: Movie) => (
+    return data?.Search?.map((film: Movie) => (
       <Card
         key={film.imdbID}
         hoverable
@@ -54,8 +69,11 @@ export default function Movies() {
   }
 
   return (
-    <main>
-      {loading ? <h1>Loading...</h1> : renderMovies()}
+    <main style={{ padding: '20px' }}>
+      <SearchComponent onSearch={handleSearch} loading={loading} />
+      {loading && <h1>Loading...</h1>}
+      {error && <h1>{error}</h1>}
+      {!loading && !error && renderMovies()}
     </main>
   );
 }
