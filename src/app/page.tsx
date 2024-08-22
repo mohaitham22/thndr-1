@@ -11,7 +11,6 @@ export default function Home() {
     defaultOptions: {
       queries: {
         staleTime: 5 * 60 * 1000, // Data remains fresh for 5 minutes
-    
       },
     },
   });
