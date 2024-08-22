@@ -1,22 +1,26 @@
+'use client';
 
 import React from "react";
-import styles from "./page.module.css";
-import Movies from "@/Components/Movies";
-// import Search from "antd/es/transfer/search";
+import Movies from '../Components/Movies';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 
-const Page: React.FC = () => {
- 
+export default function Home() {
+  // Create QueryClient with defaultOptions
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        staleTime: 5 * 60 * 1000, // Data remains fresh for 5 minutes
+    
+      },
+    },
+  });
+
   return (
-    <main className={styles.main}>
-      <div>
-        
-        {/* <Search /> */}
-
-        <Movies />
-      
-      </div>
-    </main>
+    <QueryClientProvider client={queryClient}>
+      <Movies />
+      <ReactQueryDevtools initialIsOpen={false} />
+    </QueryClientProvider>
   );
-};
+}
 
-export default Page;
